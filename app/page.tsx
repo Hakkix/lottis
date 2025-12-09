@@ -5,6 +5,7 @@ import { useSwipeable } from 'react-swipeable';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import Image from 'next/image';
+import { useGameAudio } from './hooks/useGameAudio';
 
 // Game states
 const GAME_STATE = {
@@ -33,6 +34,9 @@ export default function Tonttujahti() {
   const [lottaAction, setLottaAction] = useState<LottaAction>('IDLE');
   const [timeLeft, setTimeLeft] = useState(30);
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
+
+  // Audio hook
+  const { playSound } = useGameAudio();
 
   // Load high score from localStorage
   useEffect(() => {
@@ -64,6 +68,7 @@ export default function Tonttujahti() {
       const randomDir = dirs[Math.floor(Math.random() * dirs.length)];
       setElfPosition(randomDir);
       setLottaAction('IDLE');
+      playSound('elfAppear');
 
       // Difficulty increases with score
       const difficulty = Math.max(800, 2000 - score * 40);
@@ -71,6 +76,7 @@ export default function Tonttujahti() {
       missTimer = setTimeout(() => {
         setElfPosition(null);
         setShowFeedback('Huti! 😢');
+        playSound('timeout');
         setTimeout(() => setShowFeedback(null), 500);
         setTimeout(spawnElf, Math.random() * 300 + 200);
       }, difficulty);
@@ -95,6 +101,7 @@ export default function Tonttujahti() {
       setLottaAction('HAPPY');
       setElfPosition(null);
       setShowFeedback('Hau! +1 🎉');
+      playSound('success');
 
       // Confetti on milestones
       if (newScore % 5 === 0) {
@@ -114,12 +121,13 @@ export default function Tonttujahti() {
       // Miss!
       setLottaAction('CONFUSED');
       setShowFeedback('Väärä suunta! 🤔');
+      playSound('miss');
       setTimeout(() => {
         setShowFeedback(null);
         setLottaAction('IDLE');
       }, 500);
     }
-  }, [gameState, elfPosition, score]);
+  }, [gameState, elfPosition, score, playSound]);
 
   // Swipe handlers
   const handlers = useSwipeable({
@@ -140,20 +148,26 @@ export default function Tonttujahti() {
     setElfPosition(null);
     setShowFeedback(null);
     setGameState(GAME_STATE.PLAYING);
+    playSound('gameStart');
   };
 
   // End game
   useEffect(() => {
-    if (gameState === GAME_STATE.GAMEOVER && score > highScore) {
-      setHighScore(score);
-      localStorage.setItem('tonttujahti-highscore', score.toString());
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
+    if (gameState === GAME_STATE.GAMEOVER) {
+      if (score > highScore) {
+        setHighScore(score);
+        localStorage.setItem('tonttujahti-highscore', score.toString());
+        playSound('highScore');
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } else {
+        playSound('gameOver');
+      }
     }
-  }, [gameState, score, highScore]);
+  }, [gameState, score, highScore, playSound]);
 
   // Get Lotta image
   const getLottaImage = () => {
