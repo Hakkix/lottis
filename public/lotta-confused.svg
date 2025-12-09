@@ -1,0 +1,11 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Black Labrador confused -->
+  <ellipse cx="100" cy="140" rx="50" ry="40" fill="#1a1a1a"/>
+  <ellipse cx="105" cy="80" rx="35" ry="38" fill="#1a1a1a" transform="rotate(15 105 80)"/>
+  <ellipse cx="78" cy="68" rx="12" ry="20" fill="#1a1a1a" transform="rotate(20 78 68)"/>
+  <ellipse cx="125" cy="60" rx="12" ry="20" fill="#1a1a1a" transform="rotate(35 125 60)"/>
+  <circle cx="92" cy="78" r="4" fill="#fff"/>
+  <circle cx="112" cy="72" r="4" fill="#fff"/>
+  <ellipse cx="102" cy="90" rx="3" ry="5" fill="#2a2a2a"/>
+  <path d="M 98 100 Q 100 98 102 100" stroke="#2a2a2a" stroke-width="2" fill="none"/>
+</svg>

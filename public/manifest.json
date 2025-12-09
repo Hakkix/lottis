@@ -1,0 +1,18 @@
+{
+  "name": "Tonttujahti - Lotan Joulupeli",
+  "short_name": "Tonttujahti",
+  "description": "Hauskaa joulua Lotan kanssa! Nappaa kaikki piileksivät tontut!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/lotta-idle.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
