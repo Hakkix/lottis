@@ -26,6 +26,39 @@ npm run dev
 # Avaa selain osoitteessa http://localhost:3000
 ```
 
+### 🔧 Redis-konfiguraatio (Leaderboard)
+
+Peli käyttää Vercel KV:tä (Redis) leaderboard-tallennukseen.
+
+**Vercel-tuotannossa:**
+
+1. Mene Vercel dashboardiin: https://vercel.com/dashboard/stores
+2. Luo uusi KV database (tai käytä olemassaolevaa)
+3. Liitä database projektiin:
+   - Klikkaa KV databasea
+   - Mene "Connect to Project" -välilehdelle
+   - Valitse projektisi ja klikkaa "Connect"
+4. Ympäristömuuttujat asetetaan automaattisesti Vercelissä
+
+**Lokaalissa kehityksessä:**
+
+1. Kopioi `.env.local.example` → `.env.local`
+2. Hae ympäristömuuttujat Vercelin dashboardista:
+   - Mene projektisi asetuksiin: Settings > Environment Variables
+   - Tai KV databasen `.env`-välilehdeltä
+3. Täytä arvot `.env.local`-tiedostoon:
+   ```bash
+   KV_REST_API_URL=your_kv_rest_api_url
+   KV_REST_API_TOKEN=your_kv_rest_api_token
+   KV_REST_API_READ_ONLY_TOKEN=your_kv_rest_api_read_only_token
+   ```
+
+**Debuggaus:**
+
+Jos leaderboard ei toimi, tarkista Vercelin logeista (`vercel logs`):
+- `[Leaderboard POST]` näyttää tallennuksen onnistumisen
+- `hasKvUrl` ja `hasKvToken` kertovat onko ympäristömuuttujat asetettu
+
 ## 🏗️ Build & Deploy
 
 ```bash
@@ -72,6 +105,7 @@ Kuvat voivat olla SVG, PNG, JPG tai WebP -formaatissa.
 
 - ✅ Swipe-ohjaus (toimii hiirellä ja kosketuksella)
 - ✅ Ennätysten tallennus (localStorage)
+- ✅ Globaali leaderboard (Vercel KV / Redis)
 - ✅ Vaikeutuminen pisteiden myötä
 - ✅ Visuaalinen palaute (confetti, animaatiot)
 - ✅ Mobiiilioptimoidut
@@ -83,8 +117,9 @@ Kuvat voivat olla SVG, PNG, JPG tai WebP -formaatissa.
 - **TypeScript** - Tyypitys
 - **Tailwind CSS** - Tyylit
 - **Framer Motion** - Animaatiot
-- **react-swipeable** - Swipe-gstuurit
+- **react-swipeable** - Swipe-ohjaus
 - **canvas-confetti** - Konfetti-efekti
+- **Vercel KV** - Redis-pohjainen leaderboard-tallennus
 
 ## 📄 Lisenssi
 
