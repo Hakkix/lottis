@@ -2,6 +2,8 @@
 
 Hauskaa joulua Lotan kanssa! Nappaa kaikki piileksivät tontut swaippaamalla oikeaan suuntaan.
 
+🎮 **Pelaa nyt: [lottapeli.vercel.app](https://lottapeli.vercel.app)**
+
 ## 🎮 Pelin Idea
 
 Lotta (musta labradori) istuu ruudun keskellä. Tontut piileksivät neljässä eri paikassa:
