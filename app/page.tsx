@@ -26,6 +26,38 @@ const POSITIONS: Record<Direction, { label: string; icon: string; style: string 
   RIGHT: { label: 'Ruoka', icon: '🥣', style: 'right-8 top-1/2 -translate-y-1/2' },
 };
 
+// Snowfall component
+const Snowfall = () => {
+  const snowflakes = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    animationDuration: `${Math.random() * 10 + 10}s`,
+    animationDelay: `${Math.random() * 10}s`,
+    fontSize: `${Math.random() * 10 + 10}px`,
+    opacity: Math.random() * 0.6 + 0.4,
+  }));
+
+  return (
+    <>
+      {snowflakes.map((flake) => (
+        <div
+          key={flake.id}
+          className="snowflake"
+          style={{
+            left: flake.left,
+            animationDuration: flake.animationDuration,
+            animationDelay: flake.animationDelay,
+            fontSize: flake.fontSize,
+            opacity: flake.opacity,
+          }}
+        >
+          ❄
+        </div>
+      ))}
+    </>
+  );
+};
+
 export default function Tonttujahti() {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>(GAME_STATE.MENU);
@@ -35,6 +67,7 @@ export default function Tonttujahti() {
   const [lottaAction, setLottaAction] = useState<LottaAction>('IDLE');
   const [timeRemaining, setTimeRemaining] = useState(150); // 2:30 max time
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Audio hook
   const { playSound, toggleSound, isSoundEnabled } = useGameAudio();
@@ -54,7 +87,7 @@ export default function Tonttujahti() {
 
   // Game loop: Timer and elf spawning
   useEffect(() => {
-    if (gameState !== GAME_STATE.PLAYING) return;
+    if (gameState !== GAME_STATE.PLAYING || isPaused) return;
 
     let timer: NodeJS.Timeout;
     let missTimer: NodeJS.Timeout;
@@ -102,11 +135,11 @@ export default function Tonttujahti() {
       clearInterval(timer);
       clearTimeout(missTimer);
     };
-  }, [gameState, score]);
+  }, [gameState, score, isPaused]);
 
   // Handle swipe
   const handleSwipe = useCallback((dir: Direction) => {
-    if (gameState !== GAME_STATE.PLAYING) return;
+    if (gameState !== GAME_STATE.PLAYING || isPaused) return;
 
     if (dir === elfPosition) {
       // Success!
@@ -141,7 +174,7 @@ export default function Tonttujahti() {
         setLottaAction('IDLE');
       }, 500);
     }
-  }, [gameState, elfPosition, score, playSound]);
+  }, [gameState, elfPosition, score, playSound, isPaused]);
 
   // Swipe handlers
   const handlers = useSwipeable({
@@ -184,19 +217,54 @@ export default function Tonttujahti() {
       className="h-screen w-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden flex flex-col items-center justify-center relative touch-none select-none"
     >
 
-      {/* Sound toggle button */}
-      <motion.button
-        onClick={handleToggleSound}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        transition={{ duration: 0.3 }}
-        className="absolute top-4 right-4 z-50 bg-slate-800/80 backdrop-blur-sm border border-slate-600 rounded-full p-3 md:p-4 text-2xl md:text-3xl hover:bg-slate-700/80 transition-colors"
-        aria-label={soundEnabled ? 'Mute sound' : 'Unmute sound'}
-      >
-        {soundEnabled ? '🔊' : '🔇'}
-      </motion.button>
+      {/* Control buttons - top right */}
+      <div className="absolute top-4 right-4 z-50 flex flex-col gap-3">
+        {/* Sound toggle button */}
+        <motion.button
+          onClick={handleToggleSound}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ duration: 0.3 }}
+          className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 rounded-full p-3 md:p-4 text-2xl md:text-3xl hover:bg-slate-700/80 transition-colors"
+          aria-label={soundEnabled ? 'Mute sound' : 'Unmute sound'}
+        >
+          {soundEnabled ? '🔊' : '🔇'}
+        </motion.button>
+
+        {/* Pause button - only shown during gameplay */}
+        {gameState === GAME_STATE.PLAYING && (
+          <motion.button
+            onClick={() => setIsPaused(!isPaused)}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 rounded-full p-3 md:p-4 text-2xl md:text-3xl hover:bg-slate-700/80 transition-colors"
+            aria-label={isPaused ? 'Resume game' : 'Pause game'}
+          >
+            {isPaused ? '▶️' : '⏸️'}
+          </motion.button>
+        )}
+
+        {/* Stop button - only shown during gameplay */}
+        {gameState === GAME_STATE.PLAYING && (
+          <motion.button
+            onClick={() => setTimeRemaining(0)}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="bg-red-900/80 backdrop-blur-sm border border-red-600 rounded-full p-3 md:p-4 text-2xl md:text-3xl hover:bg-red-800/80 transition-colors"
+            aria-label="Stop game"
+          >
+            ⏹️
+          </motion.button>
+        )}
+      </div>
 
       {/* Background decorations */}
       {Object.entries(POSITIONS).map(([key, data]) => (
@@ -268,6 +336,26 @@ export default function Tonttujahti() {
         </motion.div>
       )}
 
+      {/* PAUSE overlay */}
+      {gameState === GAME_STATE.PLAYING && isPaused && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 bg-black/70 backdrop-blur-sm z-40 flex items-center justify-center"
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+            className="text-center"
+          >
+            <div className="text-6xl md:text-8xl mb-4">⏸️</div>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Peli pysäytetty</h2>
+            <p className="text-xl md:text-2xl text-slate-300">Paina ▶️ jatkaaksesi</p>
+          </motion.div>
+        </motion.div>
+      )}
+
       {/* MENU Screen */}
       {gameState === GAME_STATE.MENU && (
         <motion.div
@@ -275,6 +363,8 @@ export default function Tonttujahti() {
           animate={{ opacity: 1 }}
           className="absolute inset-0 bg-black/85 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center"
         >
+          {/* Snowfall effect */}
+          <Snowfall />
           <motion.div
             initial={{ scale: 0.5, y: -50 }}
             animate={{ scale: 1, y: 0 }}
