@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSwipeable } from 'react-swipeable';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -11,19 +12,11 @@ import { useGameAudio } from './hooks/useGameAudio';
 const GAME_STATE = {
   MENU: 'MENU',
   PLAYING: 'PLAYING',
-  NAME_INPUT: 'NAME_INPUT',
-  LEADERBOARD: 'LEADERBOARD',
 } as const;
 
 type GameState = typeof GAME_STATE[keyof typeof GAME_STATE];
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 type LottaAction = Direction | 'IDLE' | 'CONFUSED' | 'HAPPY';
-
-interface LeaderboardEntry {
-  name: string;
-  score: number;
-  timestamp: number;
-}
 
 // Positions where elves can appear
 const POSITIONS: Record<Direction, { label: string; icon: string; style: string }> = {
@@ -34,6 +27,7 @@ const POSITIONS: Record<Direction, { label: string; icon: string; style: string 
 };
 
 export default function Tonttujahti() {
+  const router = useRouter();
   const [gameState, setGameState] = useState<GameState>(GAME_STATE.MENU);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
@@ -41,9 +35,6 @@ export default function Tonttujahti() {
   const [lottaAction, setLottaAction] = useState<LottaAction>('IDLE');
   const [timeRemaining, setTimeRemaining] = useState(150); // 2:30 max time
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
-  const [playerName, setPlayerName] = useState('');
-  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [playerRank, setPlayerRank] = useState<number | null>(null);
 
   // Audio hook
   const { playSound, toggleSound, isSoundEnabled } = useGameAudio();
@@ -72,7 +63,13 @@ export default function Tonttujahti() {
     timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          setGameState(GAME_STATE.NAME_INPUT);
+          // Update high score if needed
+          if (score > highScore) {
+            setHighScore(score);
+            localStorage.setItem('tonttujahti-highscore', score.toString());
+          }
+          // Redirect to name input page
+          router.push(`/name-input?score=${score}`);
           return 0;
         }
         return prev - 1;
@@ -167,63 +164,6 @@ export default function Tonttujahti() {
     setGameState(GAME_STATE.PLAYING);
     playSound('gameStart');
   };
-
-  // Handle name submission
-  const handleNameSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!playerName.trim() || playerName.includes(' ')) {
-      return;
-    }
-
-    try {
-      // Update high score if needed
-      if (score > highScore) {
-        setHighScore(score);
-        localStorage.setItem('tonttujahti-highscore', score.toString());
-      }
-
-      // Submit score to leaderboard
-      const response = await fetch('/api/leaderboard', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: playerName.trim(), score }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setLeaderboard(data.top10);
-        setPlayerRank(data.rank);
-
-        // Play sound based on rank
-        if (data.rank <= 10) {
-          playSound('highScore');
-          confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 }
-          });
-        } else {
-          playSound('gameOver');
-        }
-
-        setGameState(GAME_STATE.LEADERBOARD);
-      }
-    } catch (error) {
-      console.error('Error submitting score:', error);
-      playSound('gameOver');
-      setGameState(GAME_STATE.LEADERBOARD);
-    }
-  };
-
-  // Fetch leaderboard on mount
-  useEffect(() => {
-    fetch('/api/leaderboard')
-      .then(res => res.json())
-      .then(data => setLeaderboard(data))
-      .catch(err => console.error('Error fetching leaderboard:', err));
-  }, []);
 
   // Get Lotta image
   const getLottaImage = () => {
@@ -391,161 +331,6 @@ export default function Tonttujahti() {
         </motion.div>
       )}
 
-      {/* NAME INPUT Screen */}
-      {gameState === GAME_STATE.NAME_INPUT && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-black/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center"
-        >
-          <motion.h2
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200 }}
-            className="text-4xl md:text-5xl font-bold mb-4 text-red-400"
-          >
-            Peli päättyi! 🎮
-          </motion.h2>
-
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            <p className="text-2xl md:text-3xl mb-3">
-              Lotta nappasi <span className="text-green-400 font-bold text-4xl">{score}</span> tonttua!
-            </p>
-
-            {score >= highScore && score > 0 && (
-              <motion.p
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.4, type: 'spring' }}
-                className="text-xl text-yellow-400 mb-6 font-bold"
-              >
-                🎉 Uusi ennätys! 🎉
-              </motion.p>
-            )}
-          </motion.div>
-
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-8xl mb-8"
-          >
-            {score > 10 ? '🏆' : score > 5 ? '🎖️' : '🦴'}
-          </motion.div>
-
-          <motion.form
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            onSubmit={handleNameSubmit}
-            className="w-full max-w-md"
-          >
-            <p className="text-lg mb-4 text-slate-300">Anna nimesi (yksi sana):</p>
-            <input
-              type="text"
-              value={playerName}
-              onChange={(e) => setPlayerName(e.target.value.replace(/\s/g, ''))}
-              placeholder="Nimi"
-              maxLength={20}
-              className="w-full px-6 py-3 text-xl text-center bg-slate-800 border-2 border-slate-600 rounded-full text-white placeholder-slate-400 focus:outline-none focus:border-green-400 mb-4"
-              autoFocus
-            />
-            <motion.button
-              type="submit"
-              disabled={!playerName.trim()}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 rounded-full text-xl md:text-2xl font-bold shadow-2xl border-4 border-green-400/50 disabled:opacity-50 disabled:cursor-not-allowed hover:from-green-500 hover:to-green-400 transition"
-            >
-              📊 Näytä Leaderboard
-            </motion.button>
-          </motion.form>
-        </motion.div>
-      )}
-
-      {/* LEADERBOARD Screen */}
-      {gameState === GAME_STATE.LEADERBOARD && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-black/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center overflow-y-auto"
-        >
-          <motion.h2
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200 }}
-            className="text-4xl md:text-5xl font-bold mb-2 text-yellow-400"
-          >
-            🏆 Leaderboard 🏆
-          </motion.h2>
-
-          {playerRank && playerRank <= 10 && (
-            <motion.p
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring' }}
-              className="text-xl text-green-400 mb-4 font-bold"
-            >
-              Sijoitus: #{playerRank}
-            </motion.p>
-          )}
-
-          <motion.div
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="w-full max-w-2xl bg-slate-800/80 backdrop-blur-sm border-2 border-slate-600 rounded-2xl p-6 mb-6"
-          >
-            <div className="space-y-2">
-              {leaderboard.length === 0 ? (
-                <p className="text-slate-400 py-8">Ei vielä tuloksia...</p>
-              ) : (
-                leaderboard.map((entry, index) => (
-                  <motion.div
-                    key={`${entry.name}-${entry.timestamp}`}
-                    initial={{ x: -50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.4 + index * 0.05 }}
-                    className={`flex items-center justify-between p-3 rounded-lg ${
-                      entry.name === playerName && entry.score === score
-                        ? 'bg-green-600/30 border-2 border-green-400'
-                        : 'bg-slate-700/50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl font-bold w-8">
-                        {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`}
-                      </span>
-                      <span className="text-lg font-bold">{entry.name}</span>
-                    </div>
-                    <span className="text-xl font-bold text-green-400">{entry.score}</span>
-                  </motion.div>
-                ))
-              )}
-            </div>
-          </motion.div>
-
-          <motion.button
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            onClick={() => {
-              setPlayerName('');
-              setPlayerRank(null);
-              setGameState(GAME_STATE.MENU);
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full text-xl md:text-2xl font-bold shadow-2xl border-4 border-blue-400/50"
-          >
-            🎮 Aloita Uusi Peli
-          </motion.button>
-        </motion.div>
-      )}
 
       {/* Lotta (center) */}
       <motion.div
