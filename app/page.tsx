@@ -70,8 +70,9 @@ export default function Tonttujahti() {
   const [isPaused, setIsPaused] = useState(false);
 
   // Audio hook
-  const { playSound, toggleSound, isSoundEnabled } = useGameAudio();
+  const { playSound, toggleSound, isSoundEnabled, setMusic, getCurrentMusic } = useGameAudio();
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [showMusicMenu, setShowMusicMenu] = useState(false);
 
   // Load high score from localStorage
   useEffect(() => {
@@ -232,6 +233,69 @@ export default function Tonttujahti() {
         >
           {soundEnabled ? '🔊' : '🔇'}
         </motion.button>
+
+        {/* Music control button */}
+        <div className="relative">
+          <motion.button
+            onClick={() => setShowMusicMenu(!showMusicMenu)}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="bg-slate-800/80 backdrop-blur-sm border border-slate-600 rounded-full p-3 md:p-4 text-2xl md:text-3xl hover:bg-slate-700/80 transition-colors"
+            aria-label="Music control"
+          >
+            🎵
+          </motion.button>
+
+          {/* Music dropdown menu */}
+          <AnimatePresence>
+            {showMusicMenu && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, x: 10 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.8, x: 10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-full mr-3 top-0 bg-slate-800/95 backdrop-blur-sm border border-slate-600 rounded-lg overflow-hidden whitespace-nowrap"
+              >
+                <button
+                  onClick={() => {
+                    setMusic('none');
+                    setShowMusicMenu(false);
+                  }}
+                  className={`block w-full px-4 py-3 text-left text-base hover:bg-slate-700/80 transition-colors ${
+                    getCurrentMusic() === 'none' ? 'bg-slate-700/60 text-green-400' : 'text-white'
+                  }`}
+                >
+                  {getCurrentMusic() === 'none' && '✓ '}Ei musiikkia
+                </button>
+                <button
+                  onClick={() => {
+                    setMusic('lotan_joululaulu');
+                    setShowMusicMenu(false);
+                  }}
+                  className={`block w-full px-4 py-3 text-left text-base hover:bg-slate-700/80 transition-colors ${
+                    getCurrentMusic() === 'lotan_joululaulu' ? 'bg-slate-700/60 text-green-400' : 'text-white'
+                  }`}
+                >
+                  {getCurrentMusic() === 'lotan_joululaulu' && '✓ '}Lotan joululaulu
+                </button>
+                <button
+                  onClick={() => {
+                    setMusic('ambient');
+                    setShowMusicMenu(false);
+                  }}
+                  className={`block w-full px-4 py-3 text-left text-base hover:bg-slate-700/80 transition-colors ${
+                    getCurrentMusic() === 'ambient' ? 'bg-slate-700/60 text-green-400' : 'text-white'
+                  }`}
+                >
+                  {getCurrentMusic() === 'ambient' && '✓ '}Ambient
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Pause button - only shown during gameplay */}
         {gameState === GAME_STATE.PLAYING && (
