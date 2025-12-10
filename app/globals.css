@@ -11,3 +11,31 @@
     @apply overflow-hidden;
   }
 }
+
+/* Snowfall animation */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10vh) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(100px);
+    opacity: 0;
+  }
+}
+
+.snowflake {
+  position: absolute;
+  top: -10vh;
+  color: white;
+  user-select: none;
+  pointer-events: none;
+  animation: snowfall linear infinite;
+  z-index: 1;
+}
