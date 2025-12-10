@@ -1,11 +1,14 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 
 type SoundType = 'success' | 'miss' | 'timeout' | 'gameStart' | 'gameOver' | 'highScore' | 'elfAppear';
+type MusicType = 'none' | 'lotan_joululaulu' | 'ambient';
 
 export function useGameAudio() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const enabledRef = useRef(true);
   const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+  const musicRef = useRef<HTMLAudioElement | null>(null);
+  const [currentMusic, setCurrentMusic] = useState<MusicType>('none');
 
   useEffect(() => {
     // Initialize AudioContext on first user interaction
@@ -177,10 +180,67 @@ export function useGameAudio() {
     timeoutsRef.current.clear();
   }, []);
 
+  // Load music preference from localStorage
+  useEffect(() => {
+    const savedMusic = localStorage.getItem('tonttujahti-music');
+    if (savedMusic && (savedMusic === 'none' || savedMusic === 'lotan_joululaulu' || savedMusic === 'ambient')) {
+      setCurrentMusic(savedMusic as MusicType);
+    }
+  }, []);
+
+  // Handle music playback
+  useEffect(() => {
+    if (currentMusic === 'none') {
+      // Stop music if playing
+      if (musicRef.current) {
+        musicRef.current.pause();
+        musicRef.current.currentTime = 0;
+      }
+      return;
+    }
+
+    // Create or update audio element
+    if (!musicRef.current) {
+      musicRef.current = new Audio();
+      musicRef.current.loop = true;
+      musicRef.current.volume = 0.3;
+    }
+
+    // Set the correct music file
+    const musicFile = currentMusic === 'lotan_joululaulu'
+      ? '/lotan_joululaulu.mp3'
+      : '/ambient.mp3';
+
+    musicRef.current.src = musicFile;
+
+    // Play the music
+    musicRef.current.play().catch(error => {
+      console.warn('Failed to play music:', error);
+    });
+
+    // Cleanup
+    return () => {
+      if (musicRef.current) {
+        musicRef.current.pause();
+      }
+    };
+  }, [currentMusic]);
+
+  const setMusic = useCallback((type: MusicType) => {
+    setCurrentMusic(type);
+    localStorage.setItem('tonttujahti-music', type);
+  }, []);
+
+  const getCurrentMusic = useCallback(() => {
+    return currentMusic;
+  }, [currentMusic]);
+
   return {
     playSound,
     toggleSound,
     isSoundEnabled,
     stopAllSounds,
+    setMusic,
+    getCurrentMusic,
   };
 }
