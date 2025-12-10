@@ -454,13 +454,15 @@ export default function Tonttujahti() {
               className="w-full px-6 py-3 text-xl text-center bg-slate-800 border-2 border-slate-600 rounded-full text-white placeholder-slate-400 focus:outline-none focus:border-green-400 mb-4"
               autoFocus
             />
-            <button
+            <motion.button
               type="submit"
               disabled={!playerName.trim()}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="w-full px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 rounded-full text-xl md:text-2xl font-bold shadow-2xl border-4 border-green-400/50 disabled:opacity-50 disabled:cursor-not-allowed hover:from-green-500 hover:to-green-400 transition"
             >
               📊 Näytä Leaderboard
-            </button>
+            </motion.button>
           </motion.form>
         </motion.div>
       )}
