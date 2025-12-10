@@ -36,13 +36,20 @@ export default function Tonttujahti() {
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
 
   // Audio hook
-  const { playSound } = useGameAudio();
+  const { playSound, toggleSound, isSoundEnabled } = useGameAudio();
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Load high score from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('tonttujahti-highscore');
     if (saved) setHighScore(parseInt(saved, 10));
   }, []);
+
+  // Handle sound toggle
+  const handleToggleSound = () => {
+    const newState = toggleSound();
+    setSoundEnabled(newState);
+  };
 
   // Game loop: Timer and elf spawning
   useEffect(() => {
@@ -187,6 +194,20 @@ export default function Tonttujahti() {
       {...handlers}
       className="h-screen w-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden flex flex-col items-center justify-center relative touch-none select-none"
     >
+
+      {/* Sound toggle button */}
+      <motion.button
+        onClick={handleToggleSound}
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        transition={{ duration: 0.3 }}
+        className="absolute top-4 right-4 z-50 bg-slate-800/80 backdrop-blur-sm border border-slate-600 rounded-full p-3 md:p-4 text-2xl md:text-3xl hover:bg-slate-700/80 transition-colors"
+        aria-label={soundEnabled ? 'Mute sound' : 'Unmute sound'}
+      >
+        {soundEnabled ? '🔊' : '🔇'}
+      </motion.button>
 
       {/* Background decorations */}
       {Object.entries(POSITIONS).map(([key, data]) => (
