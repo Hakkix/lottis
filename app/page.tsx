@@ -235,35 +235,38 @@ export default function Tonttujahti() {
         )}
       </AnimatePresence>
 
-      {/* Game UI - Top bar */}
+      {/* Game UI - Top left corner stack */}
       {gameState === GAME_STATE.PLAYING && (
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="absolute top-20 w-full flex justify-between px-6 md:px-10 text-xl md:text-2xl font-bold z-20"
+          className="absolute top-4 left-4 md:left-6 flex flex-col items-start gap-3 text-lg md:text-xl font-bold z-20"
         >
+          {/* Score counter */}
           <div className="bg-slate-800/80 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-600">
             🎯 Pisteet: <span className="text-green-400">{score}</span>
           </div>
+
+          {/* Time counter */}
           <div className="bg-slate-800/80 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-600">
             ⏱️ Aika: <span className="text-yellow-400">{Math.floor(timeRemaining / 60)}:{(timeRemaining % 60).toString().padStart(2, '0')}</span>
           </div>
+
+          {/* Feedback messages */}
+          <AnimatePresence>
+            {showFeedback && (
+              <motion.div
+                initial={{ scale: 0, x: -20 }}
+                animate={{ scale: 1, x: 0 }}
+                exit={{ scale: 0, x: -20 }}
+                className="bg-slate-800/90 px-6 py-3 rounded-full text-xl md:text-2xl font-bold backdrop-blur-sm border-2 border-white/20"
+              >
+                {showFeedback}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       )}
-
-      {/* Feedback messages */}
-      <AnimatePresence>
-        {showFeedback && (
-          <motion.div
-            initial={{ scale: 0, y: -50 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0, y: 50 }}
-            className="absolute top-24 z-30 bg-slate-800/90 px-6 py-3 rounded-full text-2xl font-bold backdrop-blur-sm border-2 border-white/20"
-          >
-            {showFeedback}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* MENU Screen */}
       {gameState === GAME_STATE.MENU && (
