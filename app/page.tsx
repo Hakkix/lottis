@@ -32,7 +32,7 @@ export default function Tonttujahti() {
   const [highScore, setHighScore] = useState(0);
   const [elfPosition, setElfPosition] = useState<Direction | null>(null);
   const [lottaAction, setLottaAction] = useState<LottaAction>('IDLE');
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [showFeedback, setShowFeedback] = useState<string | null>(null);
 
   // Audio hook
@@ -58,15 +58,9 @@ export default function Tonttujahti() {
     let timer: NodeJS.Timeout;
     let missTimer: NodeJS.Timeout;
 
-    // Game timer
+    // Game timer - counts up
     timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          setGameState(GAME_STATE.GAMEOVER);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeElapsed((prev) => prev + 1);
     }, 1000);
 
     // Elf spawning logic
@@ -150,7 +144,7 @@ export default function Tonttujahti() {
   // Start game
   const startGame = () => {
     setScore(0);
-    setTimeLeft(30);
+    setTimeElapsed(0);
     setLottaAction('IDLE');
     setElfPosition(null);
     setShowFeedback(null);
@@ -251,13 +245,13 @@ export default function Tonttujahti() {
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="absolute top-4 w-full flex justify-between px-6 md:px-10 text-xl md:text-2xl font-bold z-20"
+          className="absolute top-20 w-full flex justify-between px-6 md:px-10 text-xl md:text-2xl font-bold z-20"
         >
           <div className="bg-slate-800/80 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-600">
             🎯 Pisteet: <span className="text-green-400">{score}</span>
           </div>
           <div className="bg-slate-800/80 px-4 py-2 rounded-full backdrop-blur-sm border border-slate-600">
-            ⏱️ Aika: <span className="text-yellow-400">{timeLeft}s</span>
+            ⏱️ Aika: <span className="text-yellow-400">{Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, '0')}</span>
           </div>
         </motion.div>
       )}
@@ -355,7 +349,7 @@ export default function Tonttujahti() {
             transition={{ type: 'spring', stiffness: 200 }}
             className="text-4xl md:text-5xl font-bold mb-4 text-red-400"
           >
-            Aika loppui! ⏰
+            Peli päättyi! 🎮
           </motion.h2>
 
           <motion.div
@@ -437,7 +431,7 @@ export default function Tonttujahti() {
       </motion.div>
 
       {/* Tutorial hint */}
-      {gameState === GAME_STATE.PLAYING && score === 0 && timeLeft > 27 && (
+      {gameState === GAME_STATE.PLAYING && score === 0 && timeElapsed < 3 && (
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
