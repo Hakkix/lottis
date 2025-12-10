@@ -5,12 +5,21 @@ type SoundType = 'success' | 'miss' | 'timeout' | 'gameStart' | 'gameOver' | 'hi
 export function useGameAudio() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const enabledRef = useRef(true);
+  const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
 
   useEffect(() => {
     // Initialize AudioContext on first user interaction
-    const initAudio = () => {
+    const initAudio = async () => {
       if (!audioContextRef.current) {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      // Resume if suspended
+      if (audioContextRef.current.state === 'suspended') {
+        try {
+          await audioContextRef.current.resume();
+        } catch (error) {
+          console.warn('Failed to resume AudioContext:', error);
+        }
       }
     };
 
@@ -19,19 +28,33 @@ export function useGameAudio() {
     window.addEventListener('click', initAudio, { once: true });
 
     return () => {
-      window.removeEventListener('touchstart', initAudio);
-      window.removeEventListener('click', initAudio);
+      // Clear all pending timeouts
+      timeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+      timeoutsRef.current.clear();
+
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
     };
   }, []);
 
-  const playTone = useCallback((frequency: number, duration: number, type: OscillatorType = 'sine', volume: number = 0.3) => {
+  const playTone = useCallback(async (frequency: number, duration: number, type: OscillatorType = 'sine', volume: number = 0.3) => {
     if (!enabledRef.current || !audioContextRef.current) return;
+
+    // Validate frequency (human hearing range)
+    if (frequency < 20 || frequency > 20000) {
+      console.warn(`Invalid frequency: ${frequency}Hz. Must be between 20Hz and 20000Hz.`);
+      return;
+    }
 
     try {
       const ctx = audioContextRef.current;
+
+      // Resume context if suspended
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+
       const oscillator = ctx.createOscillator();
       const gainNode = ctx.createGain();
 
@@ -56,9 +79,14 @@ export function useGameAudio() {
 
     let currentTime = 0;
     notes.forEach(note => {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         playTone(note.freq, note.duration, note.type, note.volume);
+        // Remove timeout from set after it executes
+        timeoutsRef.current.delete(timeout);
       }, currentTime * 1000);
+
+      // Track timeout for cleanup
+      timeoutsRef.current.add(timeout);
       currentTime += note.duration;
     });
   }, [playTone]);
@@ -130,6 +158,13 @@ export function useGameAudio() {
 
   const toggleSound = useCallback(() => {
     enabledRef.current = !enabledRef.current;
+
+    // Clear pending sounds when disabling
+    if (!enabledRef.current) {
+      timeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+      timeoutsRef.current.clear();
+    }
+
     return enabledRef.current;
   }, []);
 
@@ -137,9 +172,15 @@ export function useGameAudio() {
     return enabledRef.current;
   }, []);
 
+  const stopAllSounds = useCallback(() => {
+    timeoutsRef.current.forEach(timeout => clearTimeout(timeout));
+    timeoutsRef.current.clear();
+  }, []);
+
   return {
     playSound,
     toggleSound,
     isSoundEnabled,
+    stopAllSounds,
   };
 }
