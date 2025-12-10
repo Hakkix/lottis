@@ -1,22 +1,87 @@
 <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Cute Christmas Elf -->
-  <circle cx="60" cy="55" r="25" fill="#ffd4a3"/>
-  <ellipse cx="50" cy="50" rx="3" ry="4" fill="#3a3a3a"/>
-  <ellipse cx="70" cy="50" rx="3" ry="4" fill="#3a3a3a"/>
-  <path d="M 55 60 Q 60 63 65 60" stroke="#ff6b6b" stroke-width="2" fill="none"/>
-  <circle cx="52" cy="58" r="4" fill="#ffc0c0"/>
-  <circle cx="68" cy="58" r="4" fill="#ffc0c0"/>
-  <!-- Hat -->
-  <path d="M 35 40 L 60 10 L 85 40 Z" fill="#dc2626"/>
-  <ellipse cx="60" cy="40" rx="28" ry="7" fill="#dc2626"/>
-  <circle cx="62" cy="12" r="6" fill="#fef2f2"/>
-  <ellipse cx="45" cy="42" rx="4" ry="8" fill="#ffd4a3" transform="rotate(-15 45 42)"/>
-  <ellipse cx="75" cy="42" rx="4" ry="8" fill="#ffd4a3" transform="rotate(15 75 42)"/>
-  <!-- Body -->
-  <ellipse cx="60" cy="85" rx="18" ry="22" fill="#16a34a"/>
-  <circle cx="58" cy="80" r="3" fill="#fef2f2"/>
-  <circle cx="58" cy="90" r="3" fill="#fef2f2"/>
+  <!-- Christmas Elf with Classic Elf Features -->
+
+  <!-- Body (draw first for layering) -->
+  <ellipse cx="60" cy="85" rx="20" ry="24" fill="#16a34a"/>
+
+  <!-- Elf tunic details -->
+  <path d="M 45 75 L 60 70 L 75 75 L 75 95 L 45 95 Z" fill="#15803d"/>
+
   <!-- Belt -->
-  <rect x="45" y="82" width="30" height="5" fill="#2a2a2a"/>
-  <rect x="57" y="80" width="6" height="9" fill="#fbbf24"/>
+  <rect x="42" y="82" width="36" height="6" fill="#2a2a2a"/>
+  <rect x="57" y="80" width="8" height="10" fill="#fbbf24"/>
+  <rect x="59" y="82" width="4" height="6" fill="#854d0e"/>
+
+  <!-- Striped elf legs -->
+  <ellipse cx="53" cy="103" rx="5" ry="12" fill="#dc2626"/>
+  <ellipse cx="67" cy="103" rx="5" ry="12" fill="#dc2626"/>
+  <rect x="48" y="98" width="10" height="3" fill="#fef2f2"/>
+  <rect x="48" y="104" width="10" height="3" fill="#fef2f2"/>
+  <rect x="62" y="98" width="10" height="3" fill="#fef2f2"/>
+  <rect x="62" y="104" width="10" height="3" fill="#fef2f2"/>
+
+  <!-- Elf shoes/boots -->
+  <ellipse cx="53" cy="114" rx="6" ry="4" fill="#3a3a3a"/>
+  <ellipse cx="67" cy="114" rx="6" ry="4" fill="#3a3a3a"/>
+  <circle cx="50" cy="114" r="2" fill="#fbbf24"/>
+  <circle cx="64" cy="114" r="2" fill="#fbbf24"/>
+
+  <!-- Buttons on tunic -->
+  <circle cx="58" cy="78" r="2.5" fill="#fbbf24"/>
+  <circle cx="58" cy="86" r="2.5" fill="#fbbf24"/>
+  <circle cx="58" cy="94" r="2.5" fill="#fbbf24"/>
+
+  <!-- Collar -->
+  <ellipse cx="60" cy="72" rx="12" ry="5" fill="#fef2f2"/>
+
+  <!-- Neck -->
+  <rect x="54" y="66" width="12" height="8" fill="#ffd4a3"/>
+
+  <!-- Head/Face -->
+  <circle cx="60" cy="50" r="22" fill="#ffd4a3"/>
+
+  <!-- PROMINENT POINTY ELF EARS -->
+  <ellipse cx="38" cy="50" rx="8" ry="12" fill="#ffd4a3" transform="rotate(-20 38 50)"/>
+  <ellipse cx="82" cy="50" rx="8" ry="12" fill="#ffd4a3" transform="rotate(20 82 50)"/>
+  <!-- Inner ear details -->
+  <ellipse cx="40" cy="50" rx="4" ry="6" fill="#ffb380" transform="rotate(-20 40 50)"/>
+  <ellipse cx="80" cy="50" rx="4" ry="6" fill="#ffb380" transform="rotate(20 80 50)"/>
+  <!-- Pointy ear tips -->
+  <path d="M 35 42 L 32 38 L 38 40 Z" fill="#ffd4a3"/>
+  <path d="M 85 42 L 88 38 L 82 40 Z" fill="#ffd4a3"/>
+
+  <!-- Eyebrows -->
+  <path d="M 47 43 Q 52 41 55 42" stroke="#8b5a2b" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M 65 42 Q 68 41 73 43" stroke="#8b5a2b" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- Eyes with sparkle -->
+  <ellipse cx="52" cy="48" rx="3.5" ry="5" fill="#3a3a3a"/>
+  <ellipse cx="68" cy="48" rx="3.5" ry="5" fill="#3a3a3a"/>
+  <circle cx="53" cy="47" r="1.5" fill="#ffffff"/>
+  <circle cx="69" cy="47" r="1.5" fill="#ffffff"/>
+
+  <!-- Friendly smile -->
+  <path d="M 52 58 Q 60 62 68 58" stroke="#ff6b6b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+  <!-- Rosy cheeks -->
+  <ellipse cx="46" cy="54" rx="5" ry="4" fill="#ffc0c0" opacity="0.7"/>
+  <ellipse cx="74" cy="54" rx="5" ry="4" fill="#ffc0c0" opacity="0.7"/>
+
+  <!-- Nose -->
+  <ellipse cx="60" cy="53" rx="3" ry="4" fill="#ffb380"/>
+
+  <!-- Classic Red Elf Hat -->
+  <path d="M 38 36 L 60 8 L 82 36 Z" fill="#dc2626"/>
+  <ellipse cx="60" cy="36" rx="26" ry="6" fill="#dc2626"/>
+  <!-- Hat trim -->
+  <ellipse cx="60" cy="36" rx="26" ry="6" fill="#fef2f2" opacity="0.9"/>
+  <ellipse cx="60" cy="35" rx="26" ry="4" fill="#dc2626"/>
+
+  <!-- Hat pom-pom -->
+  <circle cx="61" cy="10" r="6" fill="#fef2f2"/>
+  <circle cx="61" cy="10" r="5" fill="#ffffff"/>
+
+  <!-- Hat bell -->
+  <circle cx="61" cy="12" r="3" fill="#fbbf24"/>
+  <path d="M 61 14 L 60 16 L 62 16 Z" fill="#fbbf24"/>
 </svg>
