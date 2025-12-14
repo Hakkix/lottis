@@ -64,18 +64,39 @@ function LeaderboardContent() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch leaderboard
+  // Fetch leaderboard and merge with offline scores
   useEffect(() => {
-    fetch('/api/leaderboard')
-      .then(res => res.json())
-      .then(data => {
-        setLeaderboard(data);
-        setIsLoading(false);
-      })
-      .catch(err => {
+    const fetchAndMerge = async () => {
+      let onlineData: LeaderboardEntry[] = [];
+      try {
+        const res = await fetch('/api/leaderboard');
+        if (res.ok) {
+          onlineData = await res.json();
+        }
+      } catch (err) {
         console.error('Error fetching leaderboard:', err);
-        setIsLoading(false);
-      });
+      }
+
+      // Get offline scores
+      const offlineStored = localStorage.getItem('tonttujahti-offline-scores');
+      const offlineData: LeaderboardEntry[] = offlineStored ? JSON.parse(offlineStored) : [];
+
+      // Merge unique entries (simple dedup based on timestamp/name combo if needed, but simple concat is safer for now)
+      // Actually, we should try to avoid showing duplicate if the server has it.
+      // But since timestamps might slightly differ or logic is complex, let's just combine for now.
+      // Ideally, offline scores are those NOT on server.
+      
+      const combined = [...onlineData, ...offlineData];
+      
+      // Sort desc by score
+      combined.sort((a, b) => b.score - a.score);
+      
+      // Keep top 10 (or 20?)
+      setLeaderboard(combined.slice(0, 10));
+      setIsLoading(false);
+    };
+
+    fetchAndMerge();
   }, []);
 
   return (

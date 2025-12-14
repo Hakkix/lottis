@@ -70,13 +70,25 @@ function NameInputContent() {
         // Redirect to leaderboard with rank info
         router.push(`/leaderboard?name=${encodeURIComponent(playerName.trim())}&score=${score}&rank=${data.rank}`);
       } else {
-        // Even if there's an error, go to leaderboard
-        router.push('/leaderboard');
+        throw new Error('API returned error');
       }
     } catch (error) {
-      console.error('Error submitting score:', error);
-      // On error, still go to leaderboard
-      router.push('/leaderboard');
+      console.error('Error submitting score, saving locally:', error);
+      
+      // Save locally
+      const offlineScore = {
+        name: playerName.trim(),
+        score,
+        timestamp: Date.now()
+      };
+      
+      const existing = localStorage.getItem('tonttujahti-offline-scores');
+      const scores = existing ? JSON.parse(existing) : [];
+      scores.push(offlineScore);
+      localStorage.setItem('tonttujahti-offline-scores', JSON.stringify(scores));
+
+      // Redirect to leaderboard (without rank since we don't know it globally)
+      router.push(`/leaderboard?name=${encodeURIComponent(playerName.trim())}&score=${score}&offline=true`);
     }
   };
 

@@ -8,7 +8,7 @@ export function useGameAudio() {
   const enabledRef = useRef(true);
   const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
   const musicRef = useRef<HTMLAudioElement | null>(null);
-  const [currentMusic, setCurrentMusic] = useState<MusicType>('none');
+  const [currentMusic, setCurrentMusic] = useState<MusicType>('lotan_joululaulu');
 
   useEffect(() => {
     // Initialize AudioContext on first user interaction

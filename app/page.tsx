@@ -202,20 +202,20 @@ export default function Tonttujahti() {
   // Get Lotta image
   const getLottaImage = () => {
     switch (lottaAction) {
-      case 'UP': return '/lotta-up.svg';
-      case 'DOWN': return '/lotta-down.svg';
-      case 'LEFT': return '/lotta-left.svg';
-      case 'RIGHT': return '/lotta-right.svg';
-      case 'HAPPY': return '/lotta-happy.svg';
-      case 'CONFUSED': return '/lotta-confused.svg';
-      default: return '/lotta-idle.svg';
+      case 'UP': return '/lotta-up.webp';
+      case 'DOWN': return '/lotta-down.webp';
+      case 'LEFT': return '/lotta-left.webp';
+      case 'RIGHT': return '/lotta-right.webp';
+      case 'HAPPY': return '/lotta-happy.webp';
+      case 'CONFUSED': return '/lotta-confused.webp';
+      default: return '/lotta-idle.webp';
     }
   };
 
   return (
     <div
       {...handlers}
-      className="h-screen w-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden flex flex-col items-center justify-center relative touch-none select-none"
+      className="h-screen w-full bg-black text-white overflow-hidden flex flex-col items-center justify-center relative touch-none select-none"
     >
 
       {/* Control buttons - top right */}
@@ -449,10 +449,12 @@ export default function Tonttujahti() {
             className="mb-8"
           >
             <Image
-              src="/lotta-idle.svg"
+              src="/lotta-idle.webp"
               alt="Lotta"
-              width={150}
-              height={150}
+              width={0}
+              height={0}
+              sizes="100vw"
+              style={{ width: '150px', height: 'auto' }}
               className="filter drop-shadow-2xl"
             />
           </motion.div>
@@ -510,8 +512,10 @@ export default function Tonttujahti() {
         <Image
           src={getLottaImage()}
           alt="Lotta"
-          width={200}
-          height={200}
+          width={0}
+          height={0}
+          sizes="100vw"
+          style={{ width: '200px', height: 'auto' }}
           className="filter drop-shadow-2xl"
           priority
         />

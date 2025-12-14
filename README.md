@@ -91,13 +91,13 @@ Peli toimii Progressive Web App:ina, joten sen voi "asentaa" puhelimen kotivalik
 
 Projekti sisältää SVG-placeholder-kuvat Lotasta. Voit korvata ne oikeilla valokuvilla:
 
-- `public/lotta-idle.svg` - Lotta istuu paikoillaan
-- `public/lotta-up.svg` - Lotta hyppää ylös
-- `public/lotta-down.svg` - Lotta venyttelee (play bow)
-- `public/lotta-left.svg` - Lotta juoksee vasemmalle
-- `public/lotta-right.svg` - Lotta juoksee oikealle
-- `public/lotta-happy.svg` - Lotta onnellinen (tonttu suussa)
-- `public/lotta-confused.svg` - Lotta hämmentynyt
+- `public/lotta-idle.webp` - Lotta istuu paikoillaan
+- `public/lotta-up.webp` - Lotta hyppää ylös
+- `public/lotta-down.webp` - Lotta venyttelee (play bow)
+- `public/lotta-left.webp` - Lotta juoksee vasemmalle
+- `public/lotta-right.webp` - Lotta juoksee oikealle
+- `public/lotta-happy.webp` - Lotta onnellinen (tonttu suussa)
+- `public/lotta-confused.webp` - Lotta hämmentynyt
 
 Kuvat voivat olla SVG, PNG, JPG tai WebP -formaatissa.
 
