@@ -6,11 +6,13 @@ import { useSwipeable } from 'react-swipeable';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useGameAudio } from './hooks/useGameAudio';
+import Image from 'next/image';
 
 // Game states
 const GAME_STATE = {
   MENU: 'MENU',
   PLAYING: 'PLAYING',
+  GAME_OVER: 'GAME_OVER',
 } as const;
 
 type GameState = typeof GAME_STATE[keyof typeof GAME_STATE];
@@ -102,7 +104,7 @@ export default function Tonttujahti() {
             localStorage.setItem('tonttujahti-highscore', score.toString());
           }
           // Redirect to name input page
-          router.push(`/name-input?score=${score}`);
+          setGameState(GAME_STATE.GAME_OVER);
           return 0;
         }
         return prev - 1;
@@ -355,7 +357,7 @@ export default function Tonttujahti() {
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className={`absolute z-10 ${POSITIONS[elfPosition].style}`}
           >
-            <img
+            <Image
               src="/elf.svg"
               alt="Tonttu"
               width={100}
@@ -447,13 +449,13 @@ export default function Tonttujahti() {
             transition={{ delay: 0.3, type: 'spring' }}
             className="mb-8"
           >
-            <img
-              src="/lotta-happy.webp"
-              alt="Lotta"
-              style={{ width: '150px', height: 'auto' }}
-              className="filter drop-shadow-2xl"
-            />
-          </motion.div>
+                      <Image
+                        src="/lotta-happy.webp"
+                        alt="Lotta"
+                        width={150}
+                        height={166}
+                        className="filter drop-shadow-2xl"
+                      />          </motion.div>
 
           <p className="mb-8 text-lg md:text-xl max-w-md text-slate-300 leading-relaxed">
             Tontut piileksivät joulukoristeissa! 🎄<br/>
@@ -486,6 +488,78 @@ export default function Tonttujahti() {
         </motion.div>
       )}
 
+      {/* GAME OVER Screen */}
+      {gameState === GAME_STATE.GAME_OVER && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute inset-0 bg-black/85 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center"
+        >
+          {/* Snowfall effect */}
+          <Snowfall />
+          <motion.div
+            initial={{ scale: 0.5, y: -50 }}
+            animate={{ scale: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+          >
+            <h1 className="text-5xl md:text-6xl font-bold mb-2 text-red-500 drop-shadow-lg">
+              Peli ohi! ⏱️
+            </h1>
+            <p className="text-2xl md:text-3xl mb-6 text-green-400">
+              Sait kiinni {score} tonttua!
+            </p>
+          </motion.div>
+
+          {score > highScore && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mb-6 text-xl text-yellow-400 font-bold"
+            >
+              🎉 Uusi ennätys! {score} tonttua! 🎉
+            </motion.div>
+          )}
+          {score <= highScore && highScore > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="mb-6 text-xl text-yellow-400 font-bold"
+            >
+              🏆 Ennätys: {highScore} tonttua
+            </motion.div>
+          )}
+
+          <div className="flex flex-col gap-4">
+            <motion.button
+              onClick={startGame}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 bg-gradient-to-r from-green-600 to-green-500 rounded-full text-xl md:text-2xl font-bold hover:from-green-500 hover:to-green-400 transition shadow-lg border-4 border-green-400/50"
+            >
+              🎮 Pelaa uudelleen
+            </motion.button>
+            <motion.button
+              onClick={() => router.push(`/name-input?score=${score}`)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full text-xl md:text-2xl font-bold hover:from-blue-500 hover:to-blue-400 transition shadow-lg border-4 border-blue-400/50"
+            >
+              🚀 Lähetä pisteet
+            </motion.button>
+            <motion.button
+              onClick={() => router.push('/leaderboard')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-purple-500 rounded-full text-xl md:text-2xl font-bold hover:from-purple-500 hover:to-purple-400 transition shadow-lg border-4 border-purple-400/50"
+            >
+              🏅 Tulostaulu
+            </motion.button>
+          </div>
+        </motion.div>
+      )}
+
 
       {/* Lotta (center) */}
       <motion.div
@@ -505,10 +579,11 @@ export default function Tonttujahti() {
           stiffness: 300
         }}
       >
-        <img
+        <Image
           src={getLottaImage()}
           alt="Lotta"
-          style={{ width: '200px', height: 'auto' }}
+          width={200}
+          height={222}
           className="filter drop-shadow-2xl"
         />
       </motion.div>
