@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useSwipeable } from 'react-swipeable';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
-import Image from 'next/image';
 import { useGameAudio } from './hooks/useGameAudio';
 
 // Game states
@@ -356,7 +355,7 @@ export default function Tonttujahti() {
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className={`absolute z-10 ${POSITIONS[elfPosition].style}`}
           >
-            <Image
+            <img
               src="/elf.svg"
               alt="Tonttu"
               width={100}
@@ -448,12 +447,9 @@ export default function Tonttujahti() {
             transition={{ delay: 0.3, type: 'spring' }}
             className="mb-8"
           >
-            <Image
-              src="/lotta-idle.webp"
+            <img
+              src="/lotta-happy.webp"
               alt="Lotta"
-              width={0}
-              height={0}
-              sizes="100vw"
               style={{ width: '150px', height: 'auto' }}
               className="filter drop-shadow-2xl"
             />
@@ -509,15 +505,11 @@ export default function Tonttujahti() {
           stiffness: 300
         }}
       >
-        <Image
+        <img
           src={getLottaImage()}
           alt="Lotta"
-          width={0}
-          height={0}
-          sizes="100vw"
           style={{ width: '200px', height: 'auto' }}
           className="filter drop-shadow-2xl"
-          priority
         />
       </motion.div>
 
