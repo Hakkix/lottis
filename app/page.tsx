@@ -19,8 +19,8 @@ type LottaAction = Direction | 'IDLE' | 'CONFUSED' | 'HAPPY';
 
 // Positions where elves can appear
 const POSITIONS: Record<Direction, { label: string; icon: string; style: string }> = {
-  UP: { label: 'Kuusi', icon: '🎄', style: 'top-8 left-1/2 -translate-x-1/2' },
-  DOWN: { label: 'Lahjat', icon: '🎁', style: 'bottom-8 left-1/2 -translate-x-1/2' },
+  UP: { label: 'Kuusi', icon: '🎄', style: 'top-24 left-1/2 -translate-x-1/2' },
+  DOWN: { label: 'Lahjat', icon: '🎁', style: 'bottom-24 left-1/2 -translate-x-1/2' },
   LEFT: { label: 'Takka', icon: '🔥', style: 'left-8 top-1/2 -translate-y-1/2' },
   RIGHT: { label: 'Ruoka', icon: '🥣', style: 'right-8 top-1/2 -translate-y-1/2' },
 };
